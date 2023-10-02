@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String    @unique
+  password  String
+  role      Role      @default(USER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  tasks     Task[] // User can own multiple Tasks (one-to-many)
+  projects  Project[] // User can own multiple Projects (one-to-many)
+  SubTask   SubTask[]
+}
+
+model Task {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  status      TaskStatus @default(PENDING)
+  deletedAt   DateTime?
+  createdBy   User?      @relation(fields: [createdById], references: [id])
+  createdById Int?
+  project     Project?   @relation(fields: [projectId], references: [id])
+  projectId   Int?
+}
+
+model Project {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  status      ProjectStatus
+  deletedAt   DateTime?
+  tasks       Task[]
+  createdBy   User?         @relation(fields: [createdById], references: [id])
+  createdById Int?
+}
+
+model SubTask {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  status      SubTaskStatus @default(PENDING)
+  deletedAt   DateTime?
+  createdBy   User?         @relation(fields: [createdById], references: [id])
+  createdById Int?
+}
+
+enum Role {
+  USER
+  ADMIN
+  STAFF
+}
+
+enum ProjectStatus {
+  PENDING
+  COMPLETED
+  STARTED
+  ABORTED
+  SCHEDULED
+}
+
+enum TaskStatus {
+  PENDING
+  COMPLETED
+  STARTED
+  ABORTED
+  SCHEDULED
+}
+
+enum SubTaskStatus {
+  PENDING
+  COMPLETED
+  STARTED
+  ABORTED
+  SCHEDULED
+}
