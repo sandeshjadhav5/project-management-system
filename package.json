@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "./build/server.js",
+  "main": "build/server.js",
   "scripts": {
     "start:dev": "nodemon --exec ts-node src/server.ts",
     "build": "tsc && cp -r src/public public",
